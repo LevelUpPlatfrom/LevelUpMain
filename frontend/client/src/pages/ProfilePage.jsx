@@ -1,17 +1,39 @@
 // frontend/client/src/pages/ProfilePage.jsx
-import React, { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
-import ProfileCardDisplay from '../components/ProfileCardDisplay';
+import React from 'react'; // No other imports needed besides the hook and component
+import { useAuth } from '../hooks/useAuth'; // Import the hook
+import ProfileCardDisplay from '../components/ProfileCardDisplay'; // Import the display component
 
 const ProfilePage = () => {
-  const [userData, setUserData] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const userToken = localStorage.getItem('token');
+  // Get user data, loading status, and error directly from the useAuth hook
+  const { user, isLoading, error: authError } = useAuth();
 
-  const fetchUserData = useCallback(async () => { setIsLoading(true); setError(null); if (!userToken) { setError("Please log in."); setIsLoading(false); return; } try { const response = await axios.get('/auth/me', { headers: { 'x-auth-token': userToken } }); setUserData(response.data); } catch (err) { const message = err.response?.data?.message || err.message || "Failed to load profile."; setError(message); if (err.response?.status === 401) setError("Session expired."); } finally { setIsLoading(false); } }, [userToken]);
-  useEffect(() => { fetchUserData(); }, [fetchUserData]);
+  // No need for a separate 'error' variable if just using authError
 
-  return ( <div className="page-container profile-page"> <h1 style={{textAlign: 'center'}}>Your Profile</h1> {isLoading && <div className="loading-message">Loading Profile...</div>} {error && <div className="error-message">{error}</div>} {!isLoading && !error && userData && ( <ProfileCardDisplay user={userData} /> )} </div> );
+  return (
+    // Apply page container and specific profile page classes
+    <div className="page-container profile-page">
+      <h1 style={{ textAlign: 'center' }}>Your Profile</h1>
+
+      {/* Display loading message while auth context is loading */}
+      {isAuthLoading && <div className="loading-message">Loading Profile...</div>}
+
+      {/* Display error message directly from auth context if it exists */}
+      {authError && <div className="error-message">{authError}</div>}
+
+      {/* Display the profile card ONLY if:
+          - Not loading
+          - No auth error occurred
+          - User data actually exists */}
+      {!isAuthLoading && !authError && user && (
+        <ProfileCardDisplay user={user} />
+      )}
+
+       {/* Edge case: Handle if loading is done, no error, but user is still null */}
+       {!isAuthLoading && !authError && !user && (
+           <div className="error-message">Could not load user profile data. Please try logging in again.</div>
+       )}
+    </div>
+  );
 };
+
 export default ProfilePage;

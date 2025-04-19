@@ -1,63 +1,71 @@
 // frontend/client/src/pages/HomePage.jsx
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import HeroBanner from '../components/HeroBanner';
-import CoursePreviewCard from '../components/CoursePreviewCard';
-// NavBar and Footer are rendered in App.js
+import React from 'react';
+// REMOVED: useState, useEffect, axios, other components for now
 
-// Mock data for Solana courses
-const solanaCourses = [
-    { _id: 'solana1', title: 'Solana Beginner Bootcamp', description: 'Your first steps into the Solana ecosystem. Learn the basics of wallets, transactions, and SPL tokens.', imageUrl: 'https://via.placeholder.com/400x200?text=Solana+Beginner', transformationPromise: 'Become comfortable navigating Solana.' },
-    { _id: 'solana2', title: 'Solana Development Deep Dive', description: 'Build and deploy smart contracts on Solana using Rust and Anchor. Understand PDAs and CPI.', imageUrl: 'https://via.placeholder.com/400x200?text=Solana+Dev', transformationPromise: 'Become a capable Solana developer.' },
-    { _id: 'solana3', title: 'Advanced Solana Concepts', description: 'Explore Solana internals, validator economics, transaction processing, and cutting-edge DeFi protocols.', imageUrl: 'https://via.placeholder.com/400x200?text=Solana+Expert', transformationPromise: 'Become a Solana ecosystem expert.' },
-];
-
+// Simplified component just to display something
 const HomePage = () => {
-  const [featuredCourses, setFeaturedCourses] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchFeatured = async () => { setIsLoading(true); setError(null); try { const res = await axios.get('/api/courses/featured'); setFeaturedCourses(res.data || []); } catch (err) { setError('Failed to load courses.'); console.error(err); } finally { setIsLoading(false); } };
-    fetchFeatured();
-  }, []);
+  // We won't fetch courses for this simple test
+  const isLoading = false;
+  const error = null;
+  const featuredCourses = [ // Fake data for layout test
+      {_id: '1', title: 'Test Course 1', description: 'Description for test 1.', imageUrl: 'https://via.placeholder.com/400x200?text=Course+1'},
+      {_id: '2', title: 'Test Course 2', description: 'Description for test 2.', imageUrl: 'https://via.placeholder.com/400x200?text=Course+2'},
+      {_id: '3', title: 'Test Course 3', description: 'Description for test 3.', imageUrl: 'https://via.placeholder.com/400x200?text=Course+3'}
+  ];
 
   return (
+    // Use basic structure and class names from index.css
     <>
+      {/* Minimal Nav structure (can replace with NavBar component later) */}
+      <nav className="navbar" style={{ position: 'static' }}> {/* // Temp static position */}
+        <span className="navbar-brand">LevelUp (Test)</span>
+        <div className="navbar-links">
+          <span>Login</span> {/* Placeholder */}
+          <button className="signup-button">Sign Up</button> {/* Placeholder */}
+        </div>
+      </nav>
+
       <main>
-        <HeroBanner />
+        {/* Minimal Hero */}
+        <section className="hero-banner">
+          <div className="hero-container">
+            <h1 className="hero-title">Testing LevelUp Display</h1>
+            <p className="hero-subtitle">Does this basic page render?</p>
+          </div>
+        </section>
+
+        {/* Featured Courses Section - Uses fake data */}
         <section id="featured-courses" className="page-container featured-courses-section">
           <h2 className="section-title">Featured Journeys</h2>
-          {isLoading && <p className="loading-message">Loading Courses...</p>}
+          {isLoading && <p className="loading-message">Loading...</p>}
           {error && <p className="error-message">{error}</p>}
           {!isLoading && !error && (
             <div className="course-preview-grid">
-              {featuredCourses.length > 0 ? featuredCourses.map(c => <CoursePreviewCard key={c._id} course={c} />) : <p>No featured courses available yet.</p>}
+              {featuredCourses.length > 0 ? (
+                featuredCourses.map(course => (
+                  // Basic Card structure - Replace with CoursePreviewCard later
+                  <div key={course._id} className="course-card">
+                      <img className="course-card-image" src={course.imageUrl} alt={course.title} />
+                      <div className="course-card-content">
+                          <h3 className="course-card-title">{course.title}</h3>
+                          <p className="course-card-description">{course.description}</p>
+                          <button className="course-card-button" style={{cursor: 'default'}}>View</button>
+                      </div>
+                  </div>
+                ))
+              ) : ( <p>No courses.</p> )}
             </div>
           )}
         </section>
-
-        {/* Solana Courses Section */}
-         <section className="page-container solana-courses-section">
-           <h2 className="section-title">Solana Mastery (Coming Soon!)</h2>
-            <div className="course-preview-grid">
-               {solanaCourses.map(c => <CoursePreviewCard key={c._id} course={c} isComingSoon={true} />)}
-            </div>
-         </section>
-
-        <section className="how-it-works-section">
-          <div className="page-container">
-            <h2 className="section-title">How LevelUp Works</h2>
-            <div className="step-container">
-              <div className="step-card"> <h3>1. Sign Up</h3> <p>Create your account quickly.</p> </div>
-              <div className="step-card"> <h3>2. Choose Path</h3> <p>Select a course & begin.</p> </div>
-              <div className="step-card"> <h3>3. Level Up!</h3> <p>Complete tasks & earn XP.</p> </div>
-            </div>
-          </div>
-        </section>
       </main>
-      {/* Footer is rendered by App.js */}
+
+      {/* Minimal Footer */}
+      <footer className="footer">
+          <p>© {new Date().getFullYear()} LevelUp Test Footer</p>
+      </footer>
     </>
   );
 };
+
 export default HomePage;
